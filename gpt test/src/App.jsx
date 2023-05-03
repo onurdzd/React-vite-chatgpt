@@ -2,31 +2,29 @@ import { useState } from "react";
 import "./App.css";
 import axios from "axios";
 import { PORT } from "../config/config";
-import { TiWeatherNight } from 'react-icons/ti';
-import { BsSun } from 'react-icons/bs';
-
-// const headers = { Authorization: `Bearer ${token}` };
+import { TiWeatherNight } from "react-icons/ti";
+import { BsSun } from "react-icons/bs";
 
 function App() {
   const [data, setData] = useState();
   const [inputData, setInputData] = useState();
-  const [darkMode, setDarkMode] = useState(JSON.parse(localStorage.getItem("theme")))
+  const [darkMode, setDarkMode] = useState(
+    JSON.parse(localStorage.getItem("theme"))
+  );
 
-  const localTheme=()=>{
-    localStorage.setItem("theme", JSON.stringify(!darkMode))
-  }
+  const localTheme = () => {
+    localStorage.setItem("theme", JSON.stringify(!darkMode));
+  };
 
   const onChangeHandler = (e) => {
     setInputData(e.target.value);
   };
 
-  console.log(darkMode,JSON.parse(localStorage.getItem("theme")))
-
   const request = async () => {
     await axios
       .post(
         `http://localhost:${PORT}/gpt`,
-        { animal: `${inputData}` },
+        { icerik: `${inputData}` },
         {
           headers: {
             "Content-Type": "application/json",
@@ -34,35 +32,57 @@ function App() {
         }
       )
       .then((res) => {
-        console.log(res);
-        setData(res.data.message);
+        setData(res.data.message ? res.data.message : "Cevabı hazırlıyorum");
       })
-      .catch((err) => console.log(err));
+      .catch((err) =>{setData("Kullanım hakkın doldu.Admin ile iletişime geç"); console.log(err)});
   };
 
   return (
     <>
-    <div className="text-center">
-    <div className={`bg-white-100 ${darkMode==true ? "dark" : ""} flex-col`}>
-    <button onClick={()=>{setDarkMode(!darkMode);localTheme()}}>{darkMode==true ? <TiWeatherNight></TiWeatherNight> : <BsSun></BsSun>}</button>
-    </div>
-      <div className={`h-screen w-full flex items-center justify-center bg-white-100 ${darkMode==true ? "dark" : ""} flex-col`} >
-        <div className="flex-col ">
-          <h1 className="text-orange-400">Chat GPT test</h1>
-          <input
-            className="rounded-md border-gray-950 border-2 mb-1 font-medium text-sky-500"
-            onChange={(e) => onChangeHandler(e)}
-          ></input>
-          <div className="mb-4 font-medium text-orange-300">{inputData}</div>
+      <div className="">
+        <div
+          className={`bg-white-100 ${
+            darkMode == true ? "dark" : ""
+          } flex-col p-2 text-xl text-right pr-5`}
+        >
           <button
-            className="bg-slate-600 text-orange-400 rounded-md p-2"
-            onClick={request}
+            onClick={() => {
+              setDarkMode(!darkMode);
+              localTheme();
+            }}
           >
-            Gpt Ara
+            {darkMode == true ? (
+              <TiWeatherNight></TiWeatherNight>
+            ) : (
+              <BsSun></BsSun>
+            )}
           </button>
-          <div>{data}</div>
         </div>
-      </div>
+        <div
+          className={`h-screen w-full flex justify-center text-center bg-white-100 ${
+            darkMode == true ? "dark" : ""
+          } flex-col`}
+        >
+          <div className="w-full ">
+            <h1 className="text-orange-400 font-bold text-xl mb-2">
+              Chat GPT Test
+            </h1>
+            <h3 className="mb-3 font-medium">Chat GPT Api test için hazırlandı</h3>
+            <div className="flex gap-2 justify-center">
+              <input
+                className="rounded-md p-2 border-gray-950 border-2  font-medium text-sky-500"
+                onChange={(e) => onChangeHandler(e)}
+              ></input>
+              <button
+                className="bg-slate-600 text-orange-400 rounded-md pl-3 pr-3 font-bold text-lg"
+                onClick={request}
+              >
+               Sor
+              </button>
+            </div>
+            <div className="mt-5 p-5 w-1/2 text-xl m-auto text-center font-medium">{data}</div>
+          </div>
+        </div>
       </div>
     </>
   );

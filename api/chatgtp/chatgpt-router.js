@@ -1,46 +1,43 @@
 const express = require("express");
 const router = express.Router();
-const { Configuration, OpenAIApi } = require("openai");
+const axios = require("axios");
 
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-const openai = new OpenAIApi(configuration);
-
-router.post("/",async(req, res)=>{
+router.post("/", async (req, res) => {
+  const options = {
+    method: "POST",
+    url: `${process.env.URL}`,
+    headers: {
+      "content-type": "application/json",
+      "X-RapidAPI-Key": `${process.env.OPENAI_API_KEY}`,
+      "X-RapidAPI-Host": `${process.env.HOST}`,
+    },
+    data: {
+      conversation: [
+        {
+          role: "user",
+          content: req.body.icerik,
+        },
+      ],
+    },
+  };
   try {
-    const completion = await openai.createCompletion({
-      model: "text-davinci-003",
-      prompt: generatePrompt(req.body.animal),
-      temperature: 0.6,
-    });
-    res.status(200).json({ result: completion.data.choices[0].text });
-  } catch(error) {
-    // Consider adjusting the error handling logic for your use case
-    if (error.response) {
-      console.error(error.response.status, error.response.data);
-      res.status(error.response.status).json(error.response.data);
+    const response = await axios.request(options);
+    if (response.data.answer.content) {
+      res.status(200).json({ message: response.data.answer.content });
     } else {
-      console.error(`Error with OpenAI API request: ${error.message}`);
-      res.status(500).json({
-        error: {
-          message: 'An error occurred during your request.',
-        }
-      });
+      res
+        .status(400)
+        .json({
+          message:
+          response.data.message,
+        });
     }
+  } catch (error) {
+    res
+        .status(400)
+        .json({message:error})
+    console.error(error);
   }
-})  
-
-function generatePrompt(animal) {
-  const capitalizedAnimal =
-    animal[0].toUpperCase() + animal.slice(1).toLowerCase();
-  return `Suggest three names for an animal that is a superhero.
-Animal: Cat
-Names: Captain Sharpclaw, Agent Fluffball, The Incredible Feline
-Animal: Dog
-Names: Ruff the Protector, Wonder Canine, Sir Barks-a-Lot
-Animal: ${capitalizedAnimal}
-Names:`;
-}
+});
 
 module.exports = router;
