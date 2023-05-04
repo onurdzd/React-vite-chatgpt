@@ -11,6 +11,7 @@ function App() {
   const [darkMode, setDarkMode] = useState(
     JSON.parse(localStorage.getItem("theme"))
   );
+  const [loading,setLoading]=useState(false)
 
   const localTheme = () => {
     localStorage.setItem("theme", JSON.stringify(!darkMode));
@@ -32,9 +33,10 @@ function App() {
         }
       )
       .then((res) => {
+        setLoading(false)
         setData(res.data.message);
       })
-      .catch((err) =>{setData("Kullanım hakkın doldu.Admin ile iletişime geç"); console.log(err)});
+      .catch((err) =>{setLoading(false);setData("Kullanım hakkın doldu.Admin ile iletişime geç"); console.log(err)});
   };
 
   return (
@@ -75,12 +77,12 @@ function App() {
               ></input>
               <button
                 className="bg-slate-600 text-orange-400 rounded-md pl-3 pr-3 font-bold text-lg"
-                onClick={request}
+                onClick={()=>{request();setLoading(true)}}
               >
                Sor
               </button>
             </div>
-            <div className="mt-5 p-5 w-1/2 text-xl m-auto text-center font-medium">{data}</div>
+            <div className="mt-5 p-5 w-1/2 text-xl m-auto text-center font-medium">{loading == true ? "Sorunu araştırıyorum..." : data}</div>
           </div>
         </div>
       </div>
