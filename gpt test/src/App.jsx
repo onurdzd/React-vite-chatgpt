@@ -32,7 +32,7 @@ function App() {
         }
       )
       .then((res) => {
-        setData(res.data.message ? res.data.message : "Cevabı hazırlıyorum");
+        setData(res.data.message);
       })
       .catch((err) =>{setData("Kullanım hakkın doldu.Admin ile iletişime geç"); console.log(err)});
   };
