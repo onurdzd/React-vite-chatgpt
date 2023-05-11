@@ -12,7 +12,8 @@ router.post("/", async (req, res) => {
       "X-RapidAPI-Host": `${process.env.HOST}`,
     },
     data: {
-      conversation: [
+      model: "gpt-3.5-turbo",
+      messages: [
         {
           role: "user",
           content: req.body.icerik,
@@ -23,19 +24,14 @@ router.post("/", async (req, res) => {
   try {
     const response = await axios.request(options);
     if (response.data.answer.content) {
-      res.status(200).json({ message: response.data.answer.content });
+      res.status(200).json({ message: response.data.choices.message.content });
     } else {
-      res
-        .status(400)
-        .json({
-          message:
-          response.data.message,
-        });
+      res.status(400).json({
+        message: response.data.message,
+      });
     }
   } catch (error) {
-    res
-        .status(400)
-        .json({message:error})
+    res.status(400).json({ message: error });
     console.error(error);
   }
 });
