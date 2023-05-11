@@ -142,8 +142,8 @@ function App() {
               <button
                 className="bg-slate-600 text-orange-400 rounded-md pl-3 pr-3 font-bold text-lg"
                 onClick={() => {
-                  request();
                   setLoading(true);
+                  request();
                 }}
               >
                 Sor
