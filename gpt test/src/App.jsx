@@ -70,6 +70,8 @@ function App() {
     //   setData("Kullanım hakkın doldu.Admin ile iletişime geç");
     // }
 
+    //vercel req 2:
+
     await axios
       .post(
         `${import.meta.env.VITE_URL}`,
